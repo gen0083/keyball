@@ -3,7 +3,9 @@
 enum custom_keycodes {
     KC_MY_BTN1 = KEYBALL_SAFE_RANGE,
     KC_MY_BTN2,
-    KC_MY_BTN3, 
+    KC_MY_BTN3,
+    KC_MY_BTN4,
+    KC_MY_BTN5, 
     KC_MY_SCR,
     KC_TO_CLICKABLE_INC,
     KC_TO_CLICKABLE_DEC 
@@ -31,9 +33,9 @@ enum click_state state;       // 現在のクリック入力受付の状態 Curr
 uint16_t         click_timer; // タイマー。状態に応じて時間で判定する。 Timer. Time to determine the state of the system.
 
 // uint16_t to_clickable_time = 50;   // この秒数(千分の一秒)、WAITING状態ならクリックレイヤーが有効になる。  For this number of seconds (milliseconds), if in WAITING state, the click layer is activated.
-uint16_t to_reset_time = 1000; // この秒数(千分の一秒)、CLICKABLE状態ならクリックレイヤーが無効になる。 For this number of seconds (milliseconds), the click layer is disabled if in CLICKABLE state.
+uint16_t to_reset_time = 800; // この秒数(千分の一秒)、CLICKABLE状態ならクリックレイヤーが無効になる。 For this number of seconds (milliseconds), the click layer is disabled if in CLICKABLE state.
 
-const uint16_t click_layer = 2; // マウス入力が可能になった際に有効になるレイヤー。Layers enabled when mouse input is enabled
+const uint16_t click_layer = 5; // マウス入力が可能になった際に有効になるレイヤー。Layers enabled when mouse input is enabled
 
 int16_t scroll_v_mouse_interval_counter; // 垂直スクロールの入力をカウントする。　Counting Vertical Scroll Inputs
 int16_t scroll_h_mouse_interval_counter; // 水平スクロールの入力をカウントする。  Counts horizontal scrolling inputs.
@@ -100,7 +102,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case KC_MY_BTN1:
         case KC_MY_BTN2:
-        case KC_MY_BTN3: {
+        case KC_MY_BTN3:
+        case KC_MY_BTN4:
+        case KC_MY_BTN5: {
             report_mouse_t currentReport = pointing_device_get_report();
 
             // どこのビットを対象にするか。 Which bits are to be targeted?
@@ -124,7 +128,36 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return false;
         }
 
+        case KC_MS_BTN1:
+        case KC_MS_BTN2:
+        case KC_MS_BTN3:
+        case KC_MS_BTN4:
+        case KC_MS_BTN5: {
+            report_mouse_t currentReport = pointing_device_get_report();
+
+            // どこのビットを対象にするか。 Which bits are to be targeted?
+            uint8_t btn = 1 << (keycode - KC_MS_BTN1);
+
+            if (record->event.pressed) {
+                // ビットORは演算子の左辺と右辺の同じ位置にあるビットを比較して、両方のビットのどちらかが「1」の場合に「1」にします。
+                // Bit OR compares bits in the same position on the left and right sides of the operator and sets them to "1" if either of both bits is "1".
+                currentReport.buttons |= btn;
+                state                     = CLICKING;
+                after_click_lock_movement = 30;
+            } else {
+                // ビットANDは演算子の左辺と右辺の同じ位置にあるビットを比較して、両方のビットが共に「1」の場合だけ「1」にします。
+                // Bit AND compares the bits in the same position on the left and right sides of the operator and sets them to "1" only if both bits are "1" together.
+                currentReport.buttons &= ~btn;
+                enable_click_layer();
+            }
+
+            pointing_device_set_report(currentReport);
+            pointing_device_send();
+            return false;
+        }
+
         case KC_MY_SCR:
+        case SCRL_MO:
             if (record->event.pressed) {
                 state = SCROLLING;
             } else {
@@ -153,6 +186,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
                 eeconfig_update_user(user_config.raw);
             }
+            return false;
+        case KC_LSFT:
+        case KC_LALT:
+        case KC_LGUI:
+            // modifier keyはそのまま扱いたい
             return false;
 
         default:
