@@ -258,22 +258,26 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
 
             case SCROLLING_V: {
                 int8_t rep_v = 0;
+                int8_t rep_h = 0;
                 scroll_v_mouse_interval_counter += current_y;
                 while (my_abs(scroll_v_mouse_interval_counter) > scroll_v_threshold) {
                     if (scroll_v_mouse_interval_counter < 0) {
-                        scroll_v_mouse_interval_counter -= scroll_v_threshold;
-                        rep_v -= scroll_v_threshold;
-                    } else {
                         scroll_v_mouse_interval_counter += scroll_v_threshold;
                         rep_v += scroll_v_threshold;
+                    } else {
+                        scroll_v_mouse_interval_counter -= scroll_v_threshold;
+                        rep_v -= scroll_v_threshold;
                     }
                 }
-                current_v = -rep_v / scroll_v_threshold;
+                current_h = rep_h / scroll_h_threshold;
+                current_v = rep_v / scroll_v_threshold;
+                current_x = 0;
                 current_y = 0;
             } break;
 
             case SCROLLING_H: {
                 int8_t rep_h = 0;
+                int8_t rep_v = 0;
                 scroll_h_mouse_interval_counter += current_x;
 
                 while (my_abs(scroll_h_mouse_interval_counter) > scroll_h_threshold) {
@@ -286,7 +290,9 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
                     }
                 }
                 current_h = rep_h / scroll_h_threshold;
+                current_v = -rep_v / scroll_v_threshold;
                 current_x = 0;
+                current_y = 0;
             } break;
 
             case WAITING:
@@ -313,6 +319,8 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
         switch (state) {
             case CLICKING:
             case SCROLLING:
+            case SCROLLING_H:
+            case SCROLLING_V:
 
                 break;
 
