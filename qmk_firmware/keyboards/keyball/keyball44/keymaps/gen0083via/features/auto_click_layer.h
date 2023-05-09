@@ -176,8 +176,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case KC_LSFT:
         case KC_LALT:
         case KC_LGUI:
-            // modifier keyはそのまま扱いたい
-            return false;
+            // modifier keyはそのまま扱いたい(trueを返すとデフォルトのキーコードの動作）
+            return true;
 
         case KBC_SAVE:
         case CPI_I100:
@@ -186,8 +186,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case CPI_D1K:
         case SCRL_DVI:
         case SCRL_DVD:
-            // マウス設定に関するボタンはそのまま処理したい
-            return false;
+            // マウス設定に関するボタンはそのまま処理したい（trueを返してデフォルトの動作を作動させる）
+            return true;
 
         default:
             if (record->event.pressed) {
