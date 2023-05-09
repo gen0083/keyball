@@ -8,7 +8,7 @@ enum custom_keycodes {
     KC_MY_BTN5, 
     KC_MY_SCR,
     KC_TO_CLICKABLE_INC,
-    KC_TO_CLICKABLE_DEC 
+    KC_TO_CLICKABLE_DEC,
 };
 
 enum click_state {
@@ -100,34 +100,7 @@ bool is_clickable_mode(void) {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-        case KC_MY_BTN1:
-        case KC_MY_BTN2:
-        case KC_MY_BTN3:
-        case KC_MY_BTN4:
-        case KC_MY_BTN5: {
-            report_mouse_t currentReport = pointing_device_get_report();
-
-            // どこのビットを対象にするか。 Which bits are to be targeted?
-            uint8_t btn = 1 << (keycode - KC_MY_BTN1);
-
-            if (record->event.pressed) {
-                // ビットORは演算子の左辺と右辺の同じ位置にあるビットを比較して、両方のビットのどちらかが「1」の場合に「1」にします。
-                // Bit OR compares bits in the same position on the left and right sides of the operator and sets them to "1" if either of both bits is "1".
-                currentReport.buttons |= btn;
-                state                     = CLICKING;
-                after_click_lock_movement = 30;
-            } else {
-                // ビットANDは演算子の左辺と右辺の同じ位置にあるビットを比較して、両方のビットが共に「1」の場合だけ「1」にします。
-                // Bit AND compares the bits in the same position on the left and right sides of the operator and sets them to "1" only if both bits are "1" together.
-                currentReport.buttons &= ~btn;
-                enable_click_layer();
-            }
-
-            pointing_device_set_report(currentReport);
-            pointing_device_send();
-            return false;
-        }
-
+        // defaultのマウスボタンを扱えるようにする
         case KC_MS_BTN1:
         case KC_MS_BTN2:
         case KC_MS_BTN3:
@@ -180,17 +153,24 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     user_config.to_clickable_movement = 5;
                 }
 
-                // if (user_config.to_clickable_time < 10) {
-                //     user_config.to_clickable_time = 10;
-                // }
-
                 eeconfig_update_user(user_config.raw);
             }
             return false;
+
         case KC_LSFT:
         case KC_LALT:
         case KC_LGUI:
             // modifier keyはそのまま扱いたい
+            return false;
+
+        case KBC_SAVE:
+        case CPI_I100:
+        case CPI_D100:
+        case CPI_I1K:
+        case CPI_D1K:
+        case SCRL_DVI:
+        case SCRL_DVD:
+            // マウス設定に関するボタンはそのまま処理したい
             return false;
 
         default:
