@@ -3,20 +3,20 @@
 enum custom_keycodes {
     KC_MY_BTN1 = KEYBALL_SAFE_RANGE,
     KC_MY_BTN2,
-    KC_MY_BTN3,
-    KC_MY_BTN4,
-    KC_MY_BTN5, 
-    KC_MY_SCR,
+    KC_MY_SCRL_V,
+    KC_MY_SCRL_H,
     KC_TO_CLICKABLE_INC,
     KC_TO_CLICKABLE_DEC,
 };
 
 enum click_state {
     NONE = 0,
-    WAITING,   // マウスレイヤーが有効になるのを待つ。 Wait for mouse layer to activate.
-    CLICKABLE, // マウスレイヤー有効になりクリック入力が取れる。 Mouse layer is enabled to take click input.
-    CLICKING,  // クリック中。 Clicking.
-    SCROLLING  // スクロール中。 Scrolling.
+    WAITING,     // マウスレイヤーが有効になるのを待つ。 Wait for mouse layer to activate.
+    CLICKABLE,   // マウスレイヤー有効になりクリック入力が取れる。 Mouse layer is enabled to take click input.
+    CLICKING,    // クリック中。 Clicking.
+    SCROLLING,   // スクロール中。 Scrolling.
+    SCROLLING_H, // horizontal scroll
+    SCROLLING_V, // vertical scroll
 };
 
 typedef union {
@@ -129,12 +129,28 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return false;
         }
 
-        case KC_MY_SCR:
+        // scroll button
         case SCRL_MO:
             if (record->event.pressed) {
                 state = SCROLLING;
             } else {
                 enable_click_layer(); // スクロールキーを離した時に再度クリックレイヤーを有効にする。 Enable click layer again when the scroll key is released.
+            }
+            return false;
+
+        case KC_MY_SCRL_V:
+            if (record->event.pressed) {
+                state = SCROLLING_V;
+            } else {
+                enable_click_layer();
+            }
+            return false;
+
+        case KC_MY_SCRL_H:
+            if (record->event.pressed) {
+                state = SCROLLING_H;
+            } else {
+                enable_click_layer();
             }
             return false;
 
@@ -238,6 +254,39 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
                 current_v = -rep_v / scroll_v_threshold;
                 current_x = 0;
                 current_y = 0;
+            } break;
+
+            case SCROLLING_V: {
+                int8_t rep_v = 0;
+                scroll_v_mouse_interval_counter += current_y;
+                while (my_abs(scroll_v_mouse_interval_counter) > scroll_v_threshold) {
+                    if (scroll_v_mouse_interval_counter < 0) {
+                        scroll_v_mouse_interval_counter -= scroll_v_threshold;
+                        rep_v -= scroll_v_threshold;
+                    } else {
+                        scroll_v_mouse_interval_counter += scroll_v_threshold;
+                        rep_v += scroll_v_threshold;
+                    }
+                }
+                current_v = -rep_v / scroll_v_threshold;
+                current_y = 0;
+            } break;
+
+            case SCROLLING_H: {
+                int8_t rep_h = 0;
+                scroll_h_mouse_interval_counter += current_x;
+
+                while (my_abs(scroll_h_mouse_interval_counter) > scroll_h_threshold) {
+                    if (scroll_h_mouse_interval_counter < 0) {
+                        scroll_h_mouse_interval_counter += scroll_h_threshold;
+                        rep_h += scroll_h_threshold;
+                    } else {
+                        scroll_h_mouse_interval_counter -= scroll_h_threshold;
+                        rep_h -= scroll_h_threshold;
+                    }
+                }
+                current_h = rep_h / scroll_h_threshold;
+                current_x = 0;
             } break;
 
             case WAITING:
