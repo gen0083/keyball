@@ -190,6 +190,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             // マウス設定に関するボタンはそのまま処理したい（trueを返してデフォルトの動作を作動させる）
             return true;
 
+        case KC_X:
+        case KC_C:
+        case KC_V:
+        case KC_Z:
+             // cut/copy/paste/undoのショートカットキーはマウス操作と同時に使うことが多いのでそのまま処理する
+             return true;
+
         default:
             if (record->event.pressed) {
                 disable_click_layer();
