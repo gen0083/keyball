@@ -126,17 +126,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
             pointing_device_set_report(currentReport);
             pointing_device_send();
-            return false;
+            return true;
         }
 
         // scroll button
         case SCRL_MO:
             if (record->event.pressed) {
-                state = SCROLLING;
+                return true;
             } else {
-                enable_click_layer(); // スクロールキーを離した時に再度クリックレイヤーを有効にする。 Enable click layer again when the scroll key is released.
+                enable_click_layer();
+                return true;
             }
-            return false;
 
         case KC_MY_SCRL_V:
             if (record->event.pressed) {
@@ -179,6 +179,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             // modifier keyはそのまま扱いたい(trueを返すとデフォルトのキーコードの動作）
             return true;
 
+        case KBC_RST:
         case KBC_SAVE:
         case CPI_I100:
         case CPI_D100:
