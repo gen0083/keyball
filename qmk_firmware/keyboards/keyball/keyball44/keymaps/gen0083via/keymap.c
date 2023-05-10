@@ -60,9 +60,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [5] = LAYOUT(
-    KBC_RST  , _______   , _______   , _______     , _______   , _______     ,         _______        , LGUI(KC_BSPC), KC_TO_CLICKABLE_INC   , KC_TO_CLICKABLE_DEC         , _______      , _______  ,
-    _______  , _______   , _______   , CPI_D1K     , CPI_I1K   , _______     ,         KC_MS_BTN3     , KC_MS_BTN1   , KC_MS_BTN2, KC_MY_SCRL_V   , SCRL_MO      , _______  ,
-    KC_LCTL  , _______   , _______   , SCRL_DVD    , SCRL_DVI  , _______     ,         _______        , KC_MS_BTN4   , KC_MS_BTN5, KC_MY_SCRL_H   , _______      , _______  ,
+    KBC_RST  , CPI_D1K   , CPI_I1K   , SCRL_DVD    , SCRL_DVI  , _______     ,         _______        , LGUI(KC_BSPC), KC_TO_CLICKABLE_INC   , KC_TO_CLICKABLE_DEC         , _______      , _______  ,
+    _______  , CPI_D100  , CPI_I100  , _______     , _______   , _______     ,         KC_MS_BTN3     , KC_MS_BTN1   , KC_MS_BTN2, KC_MY_SCRL_V   , SCRL_MO      , _______  ,
+    KC_LCTL  , _______   , _______   , _______     , _______   , _______     ,         _______        , KC_MS_BTN4   , KC_MS_BTN5, KC_MY_SCRL_H   , _______      , _______  ,
                KC_LALT   , KC_LGUI   , KC_LSFT     , KBC_SAVE  , _______     ,         _______        , _______                                   , _______
   ),
 };
