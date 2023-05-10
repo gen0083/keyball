@@ -77,13 +77,16 @@ layer_state_t layer_state_set_user(layer_state_t state) {
             rgblight_sethsv(HSV_CORAL);
             break;
         case 2:
-            rgblight_sethsv(HSV_MAGENTA);
+            rgblight_sethsv(HSV_GOLD);
             break;
         case 3:
             rgblight_sethsv(HSV_TEAL);
             break;
         case 4:
             rgblight_sethsv(HSV_BLACK);
+            break;
+        case 5:
+            rgblight_sethsv(HSV_MAGENTA);
             break;
         default:
             rgblight_sethsv(HSV_WHITE);
