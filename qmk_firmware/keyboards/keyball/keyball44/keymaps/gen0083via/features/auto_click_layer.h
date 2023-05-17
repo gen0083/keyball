@@ -132,6 +132,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         // scroll button
         case SCRL_MO:
             if (record->event.pressed) {
+                state = SCROLLING;
                 return true;
             } else {
                 enable_click_layer();
@@ -195,6 +196,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case KC_V:
         case KC_Z:
              // cut/copy/paste/undoのショートカットキーはマウス操作と同時に使うことが多いのでそのまま処理する
+        case KC_W:
+        case KC_T:
+            // tab close/re-openもよく使うので除外する
              return true;
 
         default:
@@ -228,41 +232,8 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
 
                 break;
 
-            case SCROLLING: {
-                int8_t rep_v = 0;
-                int8_t rep_h = 0;
-
-                // 垂直スクロールの方の感度を高める。 Increase sensitivity toward vertical scrolling.
-                if (my_abs(current_y) * 2 > my_abs(current_x)) {
-                    scroll_v_mouse_interval_counter += current_y;
-                    while (my_abs(scroll_v_mouse_interval_counter) > scroll_v_threshold) {
-                        if (scroll_v_mouse_interval_counter < 0) {
-                            scroll_v_mouse_interval_counter += scroll_v_threshold;
-                            rep_v += scroll_v_threshold;
-                        } else {
-                            scroll_v_mouse_interval_counter -= scroll_v_threshold;
-                            rep_v -= scroll_v_threshold;
-                        }
-                    }
-                } else {
-                    scroll_h_mouse_interval_counter += current_x;
-
-                    while (my_abs(scroll_h_mouse_interval_counter) > scroll_h_threshold) {
-                        if (scroll_h_mouse_interval_counter < 0) {
-                            scroll_h_mouse_interval_counter += scroll_h_threshold;
-                            rep_h += scroll_h_threshold;
-                        } else {
-                            scroll_h_mouse_interval_counter -= scroll_h_threshold;
-                            rep_h -= scroll_h_threshold;
-                        }
-                    }
-                }
-
-                current_h = rep_h / scroll_h_threshold;
-                current_v = -rep_v / scroll_v_threshold;
-                current_x = 0;
-                current_y = 0;
-            } break;
+            case SCROLLING:
+                break;
 
             case SCROLLING_V: {
                 int8_t rep_v = 0;
