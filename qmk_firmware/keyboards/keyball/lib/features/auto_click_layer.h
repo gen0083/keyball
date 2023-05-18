@@ -201,6 +201,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             // tab close/re-openもよく使うので除外する
              return true;
 
+        case LT(5,KC_L):
+            if (!record->tap.count && record->event.pressed) {
+                enable_click_layer();
+                state = SCROLLING_V;
+                return false;
+            } else if (!record->tap.count) {
+                enable_click_layer();
+                return false;
+            }
+
         default:
             if (record->event.pressed) {
                 disable_click_layer();
