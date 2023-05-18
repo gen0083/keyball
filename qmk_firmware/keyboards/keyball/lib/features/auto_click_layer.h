@@ -180,17 +180,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             // modifier keyはそのまま扱いたい(trueを返すとデフォルトのキーコードの動作）
             return true;
 
-        case KBC_RST:
-        case KBC_SAVE:
-        case CPI_I100:
-        case CPI_D100:
-        case CPI_I1K:
-        case CPI_D1K:
-        case SCRL_DVI:
-        case SCRL_DVD:
-            // マウス設定に関するボタンはそのまま処理したい（trueを返してデフォルトの動作を作動させる）
-            return true;
-
         case KC_X:
         case KC_C:
         case KC_V:
