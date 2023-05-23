@@ -180,13 +180,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             // modifier keyはそのまま扱いたい(trueを返すとデフォルトのキーコードの動作）
             return true;
 
-        case KC_X:
-        case KC_C:
-        case KC_V:
-        case KC_Z:
+        case LGUI(KC_X):
+        case LGUI(KC_C):
+        case LGUI(KC_V):
+        case LGUI(KC_Z):
              // cut/copy/paste/undoのショートカットキーはマウス操作と同時に使うことが多いのでそのまま処理する
-        case KC_W:
-        case KC_T:
+        case LGUI(KC_W):
+        case LSG(KC_T):
             // tab close/re-openもよく使うので除外する
              return true;
 
