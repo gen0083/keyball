@@ -199,6 +199,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 enable_click_layer();
                 return false;
             }
+        case LT(5,KC_DOT):
+            if (record->event.pressed) {
+                enable_click_layer();
+                state = SCROLLING_H;
+                return false;
+            } else {
+                enable_click_layer();
+                return false;
+            }
 
         default:
             if (record->event.pressed) {
