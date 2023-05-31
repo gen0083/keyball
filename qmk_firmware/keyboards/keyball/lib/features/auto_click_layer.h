@@ -270,10 +270,10 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
                 while (my_abs(scroll_h_mouse_interval_counter) > scroll_h_threshold) {
                     if (scroll_h_mouse_interval_counter < 0) {
                         scroll_h_mouse_interval_counter += scroll_h_threshold;
-                        rep_h += scroll_h_threshold;
+                        rep_h -= scroll_h_threshold;
                     } else {
                         scroll_h_mouse_interval_counter -= scroll_h_threshold;
-                        rep_h -= scroll_h_threshold;
+                        rep_h += scroll_h_threshold;
                     }
                 }
                 current_h = rep_h / scroll_h_threshold;
