@@ -25,10 +25,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // keymap for default (VIA)
   [0] = LAYOUT(
-    KC_Q     , KC_W     , KC_E     , KC_R     , LT(4,KC_T)     ,                            KC_Y     , KC_U     , KC_I     , KC_O     , KC_P     ,
-    KC_A     , KC_S     , KC_D     , LT(3,KC_F)     , KC_G     ,                            KC_H     , KC_J     , KC_K     , KC_L     , KC_QUOT  ,
+    KC_Q     , KC_W     , KC_E     , KC_R     , LT(6,KC_T)     ,                            KC_Y     , KC_U     , KC_I     , KC_O     , KC_P     ,
+    KC_A     , KC_S     , KC_D     , LT(3,KC_F)     , KC_G     ,                            KC_H     , LT(4,KC_J)     , KC_K     , KC_L     , KC_QUOT  ,
     KC_Z     , KC_X     , KC_C     , KC_V     , KC_B     ,                            KC_N     , KC_M     , KC_COMM  , KC_DOT   , KC_SLSH  ,
-    KC_LCTL  , MT(MOD_LALT,KC_BSPC) , KC_LGUI  , KC_LSFT  , MO(1) , LT(2,KC_MINS),   KC_ENT, KC_SPACE,                           LT(3,KC_UNDS)
+    KC_LCTL  , MT(MOD_LALT,KC_BSPC) , KC_LGUI  , KC_LSFT  , MO(1) , LT(2,KC_MINS),   KC_ENT, KC_SPACE,                           KC_UNDS
   ),
 
   // 記号・シフトで入力される記号
@@ -42,25 +42,24 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // 記号・操作
   [2] = LAYOUT(
     KC_ESC   , _______ , _______     , _______     , C(G(KC_T))  ,                            _______  , _______ , _______  , KC_DEL  , KC_BSPC  ,
-    KC_TAB   , C(KC_TAB) , C(S(KC_TAB)) , SGUI(KC_A)  , _______ ,                            _______  , KC_SEMICOLON , S(KC)  , KC_GRV  , S(KC_GRV)  ,
+    KC_TAB   , C(KC_TAB) , C(S(KC_TAB)) , SGUI(KC_A)  , _______ ,                            _______  , _______ , _______  , KC_GRV  , S(KC_GRV)  ,
     KC_CAPS   , _______ , _______  , _______   , _______ ,                           _______  , _______ , _______  , KC_BSLS  , S(KC_BSLS)  ,
     _______   , _______  , _______   , _______  , _______  , _______  ,      KC_INT4   , KC_INT5 ,                                  KC_INT3
   ),
 
-  // テンキー・矢印
+  // 矢印
   [3] = LAYOUT(
-    _______   , KC_7    , KC_8     , KC_9     , KC_BSPC  ,                            LGUI(KC_LEFT)  , KC_HOME  , KC_END , LGUI(KC_RGHT)  , _______  ,
-    _______   , KC_4    , KC_5     , KC_6     , KC_PMNS ,                            KC_LEFT  , KC_DOWN  , KC_UP  , KC_RIGHT  , KC_LSFT  ,
-    KC_PAST   , KC_1    , KC_2     , KC_3     , KC_PPLS ,                            LALT(KC_LEFT)  , LALT(KC_DOWN)  , LALT(KC_UP)  , LALT(KC_RIGHT)  , _______  ,
-    KC_PSLS   , KC_0    , KC_DOT   , KC_PEQL  , KC_ENT  , _______  ,      KC_BSPC   , _______  ,                                  _______
+    _______   , _______    , _______     , _______     , _______  ,                            LGUI(KC_LEFT)  , KC_HOME  , KC_END , LGUI(KC_RGHT)  , _______  ,
+    _______   , KC_ESC    , KC_BSPC     , _______ , _______ ,                            KC_LEFT  , KC_DOWN  , KC_UP  , KC_RIGHT  , KC_LSFT  ,
+    _______   , _______    , _______     , _______     , _______ ,                            LALT(KC_LEFT)  , LALT(KC_DOWN)  , LALT(KC_UP)  , LALT(KC_RIGHT)  , _______  ,
+    _______   , _______    , _______ , _______  , _______  , _______  ,      KC_ENT   , KC_BSPC  ,                                  _______
   ),
-
-  // Config
+  // テンキー
   [4] = LAYOUT(
-    RGB_TOG  , _______  , _______  , _______  ,  _______  ,                           RGB_M_P  , RGB_M_B  , RGB_M_R  , RGB_M_SW , RGB_M_SN ,
-    RGB_MOD  , RGB_HUI  , RGB_SAI  , RGB_VAI  ,  SCRL_DVI ,                           RGB_M_K  , RGB_M_X  , RGB_M_G  , RGB_M_T  , RGB_M_TW ,
-    RGB_RMOD , RGB_HUD  , RGB_SAD  , RGB_VAD  ,  SCRL_DVD ,                           CPI_D1K  , CPI_D100 , CPI_I100 , CPI_I1K  , KBC_SAVE ,
-    RESET    , KBC_RST  , _______  , _______  ,  _______  , _______  ,     _______   , KBC_RST ,                                  RESET
+    _______   , KC_7    , KC_8     , KC_9     , KC_BSPC  ,                           _______  , _______  , _______ , _______  , _______  ,
+    _______   , KC_4    , KC_5     , KC_6     , KC_PMNS ,                            _______  , _______  , _______ , _______  , _______  ,
+    KC_PAST   , KC_1    , KC_2     , KC_3     , KC_PPLS ,                            _______  , _______  , _______ , _______  , _______  ,
+    KC_PSLS   , KC_0    , KC_DOT   , KC_PEQL  , KC_ENT  , _______  ,      KC_BSPC  , _______  ,                                  _______
   ),
 
   // Mouse
@@ -71,11 +70,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_LCTL  , KC_LALT   , KC_LGUI  , KC_LSFT  , _______  , _______  ,      _______   , _______  ,                                           _______
   ),
 
+  // Config
   [6] = LAYOUT(
-    _______   , _______ , _______  , _______  , _______  ,                            _______  , _______  , _______  , _______  , _______  ,
-    _______   , _______ , _______  , _______  , _______  ,                            _______  , _______  , _______  , _______  , _______  ,
-    _______   , _______ , _______  , _______  , _______  ,                            _______  , _______  , _______  , _______  , _______  ,
-    _______   , _______ , _______  , _______  , _______  , _______  ,      _______  , _______  ,                                  _______
+    RGB_TOG  , _______  , _______  , _______  ,  _______  ,                           RGB_M_P  , RGB_M_B  , RGB_M_R  , RGB_M_SW , RGB_M_SN ,
+    RGB_MOD  , RGB_HUI  , RGB_SAI  , RGB_VAI  ,  SCRL_DVI ,                           RGB_M_K  , RGB_M_X  , RGB_M_G  , RGB_M_T  , RGB_M_TW ,
+    RGB_RMOD , RGB_HUD  , RGB_SAD  , RGB_VAD  ,  SCRL_DVD ,                           CPI_D1K  , CPI_D100 , CPI_I100 , CPI_I1K  , KBC_SAVE ,
+    RESET    , KBC_RST  , _______  , _______  ,  _______  , _______  ,     _______   , KBC_RST ,                                  RESET
   ),
 
   [7] = LAYOUT(
