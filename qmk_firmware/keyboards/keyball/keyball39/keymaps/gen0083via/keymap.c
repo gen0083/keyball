@@ -25,34 +25,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // keymap for default (VIA)
   [0] = LAYOUT(
-    KC_Q     , KC_W     , KC_E     , KC_R     , KC_T     ,                            KC_Y     , KC_U     , KC_I     , KC_O     , KC_P     ,
+    KC_Q     , KC_W     , KC_E     , KC_R     , LT(4,KC_T)     ,                            KC_Y     , KC_U     , KC_I     , KC_O     , KC_P     ,
     KC_A     , KC_S     , KC_D     , LT(3,KC_F)     , KC_G     ,                            KC_H     , KC_J     , KC_K     , KC_L     , KC_QUOT  ,
     KC_Z     , KC_X     , KC_C     , KC_V     , KC_B     ,                            KC_N     , KC_M     , KC_COMM  , KC_DOT   , KC_SLSH  ,
-    KC_LCTL  , KC_LALT   , KC_LGUI  , KC_LSFT  , LT(1,KC_BSPC), LT(2,KC_MINS),   KC_ENT, KC_SPACE,                           LT(3,S(KC_MINS))
+    KC_LCTL  , MT(MOD_LALT,KC_BSPC) , KC_LGUI  , KC_LSFT  , MO(1) , LT(2,KC_MINS),   KC_ENT, KC_SPACE,                           LT(3,KC_UNDS)
   ),
 
   // 記号・シフトで入力される記号
   [1] = LAYOUT(
     KC_1   , KC_2 , KC_3  , KC_4  , KC_5  ,                            KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,
-    S(KC_1)   , S(KC_2) , S(KC_3)  , S(KC_4)  , S(KC_5)  ,                            KC_LBRC  , KC_RBRC  , S(KC_LBRC)  , S(KC_RBRC)  , S(KC_QUOT)  ,
-    S(KC_6)   , S(KC_7) , S(KC_8)  , S(KC_9)  , S(KC_0)  ,                            KC_EQUAL  , S(KC_EQUAL)  ,S(KC_COMM), S(KC_DOT),S(KC_GRV),
-    _______   , _______, _______  , _______  , _______  , _______  ,      KC_LANG1  , KC_LANG2  ,                      KC_RSFT
+    S(KC_1)   , S(KC_2) , S(KC_3)  , S(KC_4)  , S(KC_5)  ,                            KC_LBRC  , KC_RBRC  , S(KC_LBRC)  , S(KC_RBRC)  , KC_GRV  ,
+    S(KC_6)   , S(KC_7) , S(KC_8)  , S(KC_9)  , S(KC_0)  ,                            KC_EQUAL  , S(KC_EQUAL)  , KC_COLN, KC_SCLN , S(KC_GRV),
+    _______   , _______, _______  , _______  , _______  , _______  ,      KC_LANG1  , KC_LANG2  ,                      KC_INT3
   ),
 
   // 記号・操作
   [2] = LAYOUT(
-    KC_ESC   , _______ , _______     , _______     , _______  ,                            _______  , _______ , _______  , KC_DEL  , KC_BSPC  ,
-    KC_TAB   , _______ , _______  , _______  , _______ ,                            _______  , _______ , _______  , KC_GRV  , S(KC_GRV)  ,
+    KC_ESC   , _______ , _______     , _______     , C(G(KC_T))  ,                            _______  , _______ , _______  , KC_DEL  , KC_BSPC  ,
+    KC_TAB   , C(KC_TAB) , C(S(KC_TAB)) , SGUI(KC_A)  , _______ ,                            _______  , KC_SEMICOLON , S(KC)  , KC_GRV  , S(KC_GRV)  ,
     KC_CAPS   , _______ , _______  , _______   , _______ ,                           _______  , _______ , _______  , KC_BSLS  , S(KC_BSLS)  ,
     _______   , _______  , _______   , _______  , _______  , _______  ,      KC_INT4   , KC_INT5 ,                                  KC_INT3
   ),
 
   // テンキー・矢印
   [3] = LAYOUT(
-    _______   , KC_7    , KC_8     , KC_9     , KC_BSPC  ,                            _______  , KC_LEFT  , KC_UP    , KC_RGHT  , _______  ,
-    _______   , KC_4    , KC_5     , KC_6     , KC_PMNS ,                            KC_LEFT  , KC_DOWN  , KC_UP  , KC_RIGHT  , _______  ,
+    _______   , KC_7    , KC_8     , KC_9     , KC_BSPC  ,                            LGUI(KC_LEFT)  , KC_HOME  , KC_END , LGUI(KC_RGHT)  , _______  ,
+    _______   , KC_4    , KC_5     , KC_6     , KC_PMNS ,                            KC_LEFT  , KC_DOWN  , KC_UP  , KC_RIGHT  , KC_LSFT  ,
     KC_PAST   , KC_1    , KC_2     , KC_3     , KC_PPLS ,                            LALT(KC_LEFT)  , LALT(KC_DOWN)  , LALT(KC_UP)  , LALT(KC_RIGHT)  , _______  ,
-    KC_PSLS   , KC_0    , KC_DOT   , KC_PEQL  , _______  , _______  ,      KC_DEL   , _______  ,                                  _______
+    KC_PSLS   , KC_0    , KC_DOT   , KC_PEQL  , KC_ENT  , _______  ,      KC_BSPC   , _______  ,                                  _______
   ),
 
   // Config
