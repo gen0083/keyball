@@ -99,6 +99,8 @@ bool is_clickable_mode(void) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    static uint16_t my_timer;
+
     switch (keycode) {
         // defaultのマウスボタンを扱えるようにする
         case KC_MS_BTN1:
@@ -130,28 +132,31 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
 
         // scroll button
-        case SCRL_MO:
-            if (record->event.pressed) {
-                state = SCROLLING;
-                return true;
-            } else {
-                enable_click_layer();
-                return true;
-            }
-
+        // 独自コードはtap-holdが設定できないので独自にハンドリング
         case KC_MY_SCRL_V:
             if (record->event.pressed) {
+                my_timer = timer_read();
                 state = SCROLLING_V;
             } else {
-                enable_click_layer();
+                if (timer_elapsed(my_timer) < TAPPING_TERM) {
+                     disable_click_layer();
+                     tap_code(KC_L);
+                } else {
+                     enable_click_layer();
+                }
             }
             return false;
-
         case KC_MY_SCRL_H:
             if (record->event.pressed) {
+                my_timer = timer_read();
                 state = SCROLLING_H;
             } else {
-                enable_click_layer();
+                if (timer_elapsed(my_timer) < TAPPING_TERM) {
+                     disable_click_layer();
+                     tap_code(KC_DOT);
+                } else {
+                    enable_click_layer();
+                }
             }
             return false;
 
@@ -190,6 +195,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             // tab close/re-openもよく使うので除外する
              return true;
 
+        // スクロールの挙動を理想的にする(スクロール時は先にボタンを押してからトラックボールを動かすことがあるのでその調整）
         case LT(5,KC_L):
             if (!record->tap.count && record->event.pressed) {
                 enable_click_layer();
@@ -198,15 +204,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             } else if (!record->tap.count) {
                 enable_click_layer();
                 return false;
+            } else {
+                return true;
             }
         case LT(5,KC_DOT):
             if (record->event.pressed) {
                 enable_click_layer();
                 state = SCROLLING_H;
                 return false;
-            } else {
+            } else if (!record->tap.count) {
                 enable_click_layer();
                 return false;
+            } else {
+                return true;
             }
 
         default:

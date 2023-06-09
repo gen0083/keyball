@@ -66,7 +66,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // Mouse
   [5] = LAYOUT(
     KC_ESC   , _______ , _______  , _______  , _______  ,                            _______  , LGUI(KC_BSPC)  , KC_TO_CLICKABLE_INC , KC_TO_CLICKABLE_DEC, _______  ,
-    KC_TAB   , _______ , _______  , _______  , _______  ,                            LSG(KC_T)  , KC_MS_BTN1   , KC_MS_BTN2, KC_MY_SCRL_V , SCRL_MO  ,
+    KC_TAB   , _______ , _______  , _______  , _______  ,                            LSG(KC_T)  , KC_MS_BTN1   , KC_MS_BTN2, KC_MY_SCRL_V , _______  ,
     _______   , _______ , _______  , _______  , _______  ,                            LGUI(KC_W) , KC_MS_BTN4   , KC_MS_BTN5, KC_MY_SCRL_H, _______  ,
     KC_LCTL  , KC_LALT   , KC_LGUI  , KC_LSFT  , _______  , _______  ,      _______   , _______  ,                                           _______
   ),
