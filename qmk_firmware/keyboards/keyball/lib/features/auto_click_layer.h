@@ -7,6 +7,7 @@ enum custom_keycodes {
     KC_MY_SCRL_H,
     KC_TO_CLICKABLE_INC,
     KC_TO_CLICKABLE_DEC,
+    MY_MOUSE_RANGE,
 };
 
 enum click_state {
