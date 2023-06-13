@@ -38,11 +38,8 @@ uint16_t to_reset_time = 800; // この秒数(千分の一秒)、CLICKABLE状態
 
 const uint16_t click_layer = 5; // マウス入力が可能になった際に有効になるレイヤー。Layers enabled when mouse input is enabled
 
-int16_t scroll_v_mouse_interval_counter; // 垂直スクロールの入力をカウントする。　Counting Vertical Scroll Inputs
-int16_t scroll_h_mouse_interval_counter; // 水平スクロールの入力をカウントする。  Counts horizontal scrolling inputs.
-
-int16_t scroll_v_threshold = 50; // この閾値を超える度に垂直スクロールが実行される。 Vertical scrolling is performed each time this threshold is exceeded.
-int16_t scroll_h_threshold = 50; // この閾値を超える度に水平スクロールが実行される。 Each time this threshold is exceeded, horizontal scrolling is performed.
+int16_t scroll_mouse_interval_counter; // スクロールの入力をカウントする。　Counting Vertical Scroll Inputs
+int16_t scroll_threshold = 50; // この閾値を超える度に垂直スクロールが実行される。 Vertical scrolling is performed each time this threshold is exceeded.
 
 int16_t after_click_lock_movement = 0; // クリック入力後の移動量を測定する変数。 Variable that measures the amount of movement after a click input.
 
@@ -72,8 +69,9 @@ void enable_click_layer(void) {
 void disable_click_layer(void) {
     state = NONE;
     layer_off(click_layer);
-    scroll_v_mouse_interval_counter = 0;
-    scroll_h_mouse_interval_counter = 0;
+    scroll_mouse_interval_counter = 0;
+    scroll_mouse_interval_counter = 0;
+    mouse_movement = 0;
 }
 
 // 自前の絶対数を返す関数。 Functions that return absolute numbers.
@@ -96,11 +94,11 @@ int16_t mmouse_move_y_sign(int16_t num) {
 
 // 現在クリックが可能な状態か。 Is it currently clickable?
 bool is_clickable_mode(void) {
-    return state == CLICKABLE || state == CLICKING || state == SCROLLING;
+    return state == CLICKABLE || state == CLICKING || state == SCROLLING_V || state == SCROLLING_H;
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    static uint16_t my_timer;
+    uint16_t my_timer;
 
     switch (keycode) {
         // defaultのマウスボタンを扱えるようにする
@@ -257,18 +255,18 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
             case SCROLLING_V: {
                 int8_t rep_v = 0;
                 int8_t rep_h = 0;
-                scroll_v_mouse_interval_counter += current_y;
-                while (my_abs(scroll_v_mouse_interval_counter) > scroll_v_threshold) {
-                    if (scroll_v_mouse_interval_counter < 0) {
-                        scroll_v_mouse_interval_counter += scroll_v_threshold;
-                        rep_v += scroll_v_threshold;
+                scroll_mouse_interval_counter += current_y;
+                while (my_abs(scroll_mouse_interval_counter) > scroll_threshold) {
+                    if (scroll_mouse_interval_counter < 0) {
+                        scroll_mouse_interval_counter += scroll_threshold;
+                        rep_v += scroll_threshold;
                     } else {
-                        scroll_v_mouse_interval_counter -= scroll_v_threshold;
-                        rep_v -= scroll_v_threshold;
+                        scroll_mouse_interval_counter -= scroll_threshold;
+                        rep_v -= scroll_threshold;
                     }
                 }
-                current_h = rep_h / scroll_h_threshold;
-                current_v = rep_v / scroll_v_threshold;
+                current_h = rep_h / scroll_threshold;
+                current_v = rep_v / scroll_threshold;
                 current_x = 0;
                 current_y = 0;
             } break;
@@ -276,19 +274,19 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
             case SCROLLING_H: {
                 int8_t rep_h = 0;
                 int8_t rep_v = 0;
-                scroll_h_mouse_interval_counter += current_x;
+                scroll_mouse_interval_counter += current_x;
 
-                while (my_abs(scroll_h_mouse_interval_counter) > scroll_h_threshold) {
-                    if (scroll_h_mouse_interval_counter < 0) {
-                        scroll_h_mouse_interval_counter += scroll_h_threshold;
-                        rep_h -= scroll_h_threshold;
+                while (my_abs(scroll_mouse_interval_counter) > scroll_threshold) {
+                    if (scroll_mouse_interval_counter < 0) {
+                        scroll_mouse_interval_counter += scroll_threshold;
+                        rep_h -= scroll_threshold;
                     } else {
-                        scroll_h_mouse_interval_counter -= scroll_h_threshold;
-                        rep_h += scroll_h_threshold;
+                        scroll_mouse_interval_counter -= scroll_threshold;
+                        rep_h += scroll_threshold;
                     }
                 }
-                current_h = rep_h / scroll_h_threshold;
-                current_v = -rep_v / scroll_v_threshold;
+                current_h = rep_h / scroll_threshold;
+                current_v = -rep_v / scroll_threshold;
                 current_x = 0;
                 current_y = 0;
             } break;
@@ -300,7 +298,7 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
                 }
                 */
 
-                mouse_movement += my_abs(current_x) + my_abs(current_y);
+                mouse_movement = my_abs(current_x) > my_abs(current_y) ? my_abs(current_x) : my_abs(current_y);
 
                 if (mouse_movement >= user_config.to_clickable_movement) {
                     mouse_movement = 0;
