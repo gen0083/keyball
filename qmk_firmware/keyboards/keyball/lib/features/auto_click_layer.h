@@ -209,7 +209,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 return true;
             }
         case LT(5,KC_DOT):
-            if (record->event.pressed) {
+            if (!record->tap.count && record->event.pressed) {
                 enable_click_layer();
                 state = SCROLLING_H;
                 return false;
