@@ -9,12 +9,19 @@ qmk_firmwareをホームディレクトリ、Keyballを~/program/keyboardに配�
 1. [qmk_firmware](https://github.com/qmk/qmk_firmware)をcloneする
 2. [gen0083/keyball](https://github.com/gen0083/keyball)のclone
 3. symbolic linkを貼る（`ln -s ~/program/keyboard/keyball_gen0083/qmk_firmware/keyboards/keyball ~/qmk_firmware/keyboards/keyball`）[^1]
-4. qmk_firmwareのバージョンを合わせる（`git checkout 0.19.x`）
-5. qmk_firmwareでビルド（`qmk compile -kb <keyboard> -km <keymap>`）[^2]
+4. qmk_firmwareのバージョンを合わせる（`git checkout 0.16.9`）
+5. qmk_firmwareでビルド（`qmk compile -kb <keyboard> -km <keymap>`）[^2][^3]
 6. `qmk flash`で書き込み
 
 [^1]: symbolic linkの削除は `unlink`
 [^2]: 細かい設定はドキュメント参照　https://docs.qmk.fm/#/newbs_building_firmware
+[^3]: `qmk config user.keyboard=keyball/keyball39`や`qmk config user.keybamp=gen0083via`で設定しておけば`qmk compile`だけですむ。ちなみに設定値の削除は`qmk config user.keyboard=None`のようにNoneを指定すれば削除できる。
+
+- keyball/keyball39/gen0083via
+- keyball/keyball44/gen0083via
+はqmk 0.16.9で設定（remap使える）
+
+keyball/keyball39/gen0083はqmkのバージョン最新で（remap使えない）
 
 ## Firmware build guide
 
