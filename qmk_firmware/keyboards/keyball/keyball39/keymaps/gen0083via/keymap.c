@@ -21,67 +21,68 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "quantum.h"
 #include "lib/features/auto_click_layer.h"
 #include "tap_customize.h"
+#include "tap_dance.h"
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // keymap for default (VIA)
   [0] = LAYOUT(
-    KC_Q     , KC_W     , KC_E     , KC_R     , LT(6,KC_T)     ,                            KC_Y     , KC_U     , KC_I     , KC_O     , KC_P     ,
-    KC_A     , KC_S     , KC_D     , LT(3,KC_F)     , KC_G     ,                            KC_H     , LT(4,KC_J)     , KC_K     , KC_L     , KC_QUOT  ,
-    KC_Z     , KC_X     , KC_C     , KC_V     , KC_B     ,                            KC_N     , KC_M     , KC_COMM  , KC_DOT   , KC_SLSH  ,
-    KC_LCTL  , MT(MOD_LALT,KC_BSPC) , KC_LGUI  , KC_LSFT  , MO(1) , LT(2,KC_MINS),   KC_ENT, KC_SPACE,                           KC_UNDS
+    TD(TD_Q_ESC), KC_W  , KC_E     , KC_R     , LT(6,KC_T) ,                                 KC_Y     , KC_U     , KC_I     , KC_O           , KC_P     ,
+    KC_A     , KC_S     , KC_D     , LT(3,KC_F) , KC_G     ,                                 KC_H     , LT(4,KC_J) , KC_K    , LT(5,KC_L)    , KC_DQUO  ,
+    KC_Z     , KC_X     , KC_C     , KC_V     , KC_B     ,                                   KC_N     , KC_M     , KC_COMM  , LT(5,KC_DOT)   , KC_SLSH  ,
+    KC_LCTL  , KC_LALT , KC_LGUI  , KC_LSFT  , LT(1,KC_BSPC) , LT(2,KC_MINS),      KC_ENT , KC_SPACE  ,                                        KC_UNDS
   ),
 
   // 記号・シフトで入力される記号
   [1] = LAYOUT(
-    KC_1   , KC_2 , KC_3  , KC_4  , KC_5  ,                            KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,
-    S(KC_1)   , S(KC_2) , S(KC_3)  , S(KC_4)  , S(KC_5)  ,                            KC_LBRC  , KC_RBRC  , S(KC_LBRC)  , S(KC_RBRC)  , KC_GRV  ,
-    S(KC_6)   , S(KC_7) , S(KC_8)  , S(KC_9)  , S(KC_0)  ,                            KC_EQUAL  , S(KC_EQUAL)  , KC_COLN, KC_SCLN , S(KC_GRV),
-    _______   , _______, _______  , _______  , _______  , _______  ,      KC_LANG1  , KC_LANG2  ,                      KC_INT3
+    KC_1      , KC_2    , KC_3     , KC_4     , KC_5     ,                            KC_6      , KC_7        , KC_8    , KC_9    , KC_0  ,
+    S(KC_1)   , S(KC_2) , S(KC_3)  , S(KC_4)  , S(KC_5)  ,                            KC_GRV    , KC_PIPE     , KC_COLN , KC_SCLN , KC_QUOT ,
+    S(KC_6)   , S(KC_7) , S(KC_8)  , S(KC_9)  , S(KC_0)  ,                            KC_EQUAL  , S(KC_EQUAL) , KC_GRV  , KC_TILD , KC_QUES ,
+    _______   , _______, _______  , _______  , _______  , _______  ,      KC_LANG1  , KC_LANG2  ,                                   KC_BSLS
   ),
 
   // 記号・操作
   [2] = LAYOUT(
-    KC_ESC   , _______ , _______     , _______     , C(G(KC_T))  ,                            _______  , _______ , _______  , KC_DEL  , KC_BSPC  ,
-    KC_TAB   , C(KC_TAB) , C(S(KC_TAB)) , SGUI(KC_A)  , _______ ,                            _______  , _______ , _______  , KC_GRV  , S(KC_GRV)  ,
-    KC_CAPS   , _______ , _______  , _______   , _______ ,                           _______  , _______ , _______  , KC_BSLS  , S(KC_BSLS)  ,
-    _______   , _______  , _______   , _______  , _______  , _______  ,      KC_INT4   , KC_INT5 ,                                  KC_INT3
+    KC_ESC   , _______   , _______      , _______    , C(G(KC_T)) ,                           _______ , _______ , _______  , _______ , KC_DEL  ,
+    KC_TAB   , C(KC_TAB) , C(S(KC_TAB)) , SGUI(KC_A) , C(KC_Z)    ,                           KC_LPRN , KC_LCBR , KC_LBRC  , KC_LT   , KC_BSLS  ,
+    KC_CAPS  , _______   , _______      , G(KC_LBRC) , G(KC_RBRC) ,                           KC_RPRN , KC_RCBR , KC_RBRC  , KC_GT   , KC_PIPE  ,
+    _______  , _______   , _______      , _______    , _______    , _______  ,      KC_INT4 , KC_INT5 ,                                KC_INT3
   ),
 
   // 矢印
   [3] = LAYOUT(
-    _______   , _______    , _______     , _______     , _______  ,                            LGUI(KC_LEFT)  , KC_HOME  , KC_END , LGUI(KC_RGHT)  , _______  ,
-    _______   , KC_ESC    , KC_BSPC     , _______ , _______ ,                            KC_LEFT  , KC_DOWN  , KC_UP  , KC_RIGHT  , KC_LSFT  ,
-    _______   , _______    , _______     , _______     , _______ ,                            LALT(KC_LEFT)  , LALT(KC_DOWN)  , LALT(KC_UP)  , LALT(KC_RIGHT)  , _______  ,
-    _______   , _______    , _______ , _______  , _______  , _______  ,      KC_ENT   , KC_BSPC  ,                                  _______
+    KC_ESC   , _______    , _______ , _______ , _______ ,                             G(KC_LEFT)   , KC_HOME    , KC_END   , G(KC_RGHT)  , _______  ,
+    G(KC_A)  , G(KC_V)    , G(KC_X) , _______ , _______ ,                             KC_LEFT      , KC_DOWN    , KC_UP    , KC_RIGHT    , _______  ,
+    G(KC_Z)  , LSG(KC_Z)  , G(KC_C) , _______ , _______ ,                             A(KC_LEFT)   , A(KC_DOWN) , A(KC_UP) , A(KC_RIGHT) , _______  ,
+    _______  , _______    , _______ , _______ , _______ , _______  ,      S(KC_ENT) , C(S(KC_ENT)) ,                                       _______
   ),
   // テンキー
   [4] = LAYOUT(
-    _______   , KC_7    , KC_8     , KC_9     , KC_BSPC  ,                           _______  , _______  , _______ , _______  , _______  ,
-    _______   , KC_4    , KC_5     , KC_6     , KC_PMNS ,                            _______  , _______  , _______ , _______  , _______  ,
+    KC_ESC    , KC_7    , KC_8     , KC_9     , _______  ,                           _______  , _______  , _______ , _______  , _______  ,
+    KC_TAB    , KC_4    , KC_5     , KC_6     , KC_PMNS ,                            _______  , _______  , _______ , _______  , _______  ,
     KC_PAST   , KC_1    , KC_2     , KC_3     , KC_PPLS ,                            _______  , _______  , _______ , _______  , _______  ,
-    KC_PSLS   , KC_0    , KC_DOT   , KC_PEQL  , KC_ENT  , _______  ,      KC_BSPC  , _______  ,                                  _______
+    KC_PSLS   , KC_0    , KC_DOT   , KC_PEQL  , KC_BSPC , _______  ,      KC_ENT  , _______  ,                                  _______
   ),
 
   // Mouse
   [5] = LAYOUT(
-    KC_ESC   , _______ , _______  , _______  , _______  ,                            _______  , LGUI(KC_BSPC)  , KC_TO_CLICKABLE_INC , KC_TO_CLICKABLE_DEC, _______  ,
-    KC_TAB   , _______ , _______  , _______  , _______  ,                            LSG(KC_T)  , KC_MS_BTN1   , KC_MS_BTN2, KC_MY_SCRL_V , _______  ,
-    _______   , _______ , _______  , _______  , _______  ,                            LGUI(KC_W) , KC_MS_BTN4   , KC_MS_BTN5, KC_MY_SCRL_H, _______  ,
-    KC_LCTL  , KC_LALT   , KC_LGUI  , KC_LSFT  , _______  , _______  ,      _______   , _______  ,                                           _______
+    KC_ESC   , _______ , _______  , _______  , _______  ,                          _______    , _______    , _______    , _______      , _______  ,
+    KC_TAB   , _______ , _______  , _______  , _______  ,                          LSG(KC_T)  , KC_MS_BTN1 , KC_MS_BTN2 , KC_MY_SCRL_V , _______  ,
+    _______  , _______ , _______  , _______  , _______  ,                          LGUI(KC_W) , KC_MS_BTN4 , KC_MS_BTN5 , KC_MY_SCRL_H , _______  ,
+    KC_LCTL  , KC_LALT , KC_LGUI  , KC_LSFT  , _______  , _______  ,      _______ , _______   ,                                          _______
   ),
 
   // Config
   [6] = LAYOUT(
-    RGB_TOG  , _______  , _______  , _______  ,  _______  ,                           RGB_M_P  , RGB_M_B  , RGB_M_R  , RGB_M_SW , RGB_M_SN ,
-    RGB_MOD  , RGB_HUI  , RGB_SAI  , RGB_VAI  ,  SCRL_DVI ,                           RGB_M_K  , RGB_M_X  , RGB_M_G  , RGB_M_T  , RGB_M_TW ,
-    RGB_RMOD , RGB_HUD  , RGB_SAD  , RGB_VAD  ,  SCRL_DVD ,                           CPI_D1K  , CPI_D100 , CPI_I100 , CPI_I1K  , KBC_SAVE ,
-    RESET    , KBC_RST  , _______  , _______  ,  _______  , _______  ,     _______   , KBC_RST ,                                  RESET
+    RGB_TOG  , _______  , KC_TO_CLICKABLE_DEC  , KC_TO_CLICKABLE_INC  ,  _______  ,                           RGB_M_P  , RGB_M_B  , RGB_M_R  , RGB_M_SW , RGB_M_SN ,
+    RGB_MOD  , RGB_HUI  , RGB_SAI              , RGB_VAI              ,  SCRL_DVI ,                           RGB_M_K  , RGB_M_X  , RGB_M_G  , RGB_M_T  , RGB_M_TW ,
+    RGB_RMOD , RGB_HUD  , RGB_SAD              , RGB_VAD              ,  SCRL_DVD ,                           CPI_D1K  , CPI_D100 , CPI_I100 , CPI_I1K  , KBC_SAVE ,
+    RESET    , KBC_RST  , _______              , _______              ,  _______  , _______  ,    _______   , KBC_RST  ,                                  RESET
   ),
 
   [7] = LAYOUT(
-    _______   , _______ , _______  , _______  , _______  ,                            _______  , _______  , _______  , _______  , _______  ,
-    _______   , _______ , _______  , _______  , _______  ,                            _______  , _______  , _______  , _______  , _______  ,
+    KC_F1   , KC_F2 , KC_F3  , KC_F4  , KC_F5  ,                            _______  , _______  , _______  , _______  , _______  ,
+    KC_F6   , KC_F7 , KC_F8  , KC_F9  , KC_F10  ,                            _______  , _______  , _______  , _______  , _______  ,
     _______   , _______ , _______  , _______  , _______  ,                            _______  , _______  , _______  , _______  , _______  ,
     _______   , _______ , _______  , _______  , _______  , _______  ,      _______  , _______  ,                                  _______
   ),
