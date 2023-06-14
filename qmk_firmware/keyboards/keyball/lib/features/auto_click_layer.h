@@ -23,8 +23,8 @@ enum click_state {
 typedef union {
     uint32_t raw;
     struct {
-        // int16_t to_clickable_time; // // この秒数(千分の一秒)、WAITING状態ならクリックレイヤーが有効になる。  For this number of seconds (milliseconds), if in WAITING state, the click layer is activated.
-        int16_t to_clickable_movement;
+        int16_t to_clickable_time; // // この秒数(千分の一秒)、WAITING状態ならクリックレイヤーが有効になる。  For this number of seconds (milliseconds), if in WAITING state, the click layer is activated.
+        // int16_t to_clickable_movement;
     };
 } user_config_t;
 
@@ -32,6 +32,7 @@ user_config_t user_config;
 
 enum click_state state;       // 現在のクリック入力受付の状態 Current click input reception status
 uint16_t         click_timer; // タイマー。状態に応じて時間で判定する。 Timer. Time to determine the state of the system.
+uint16_t tp_enable_click_timer; // マウス操作の経過時間を保持する変数
 
 // uint16_t to_clickable_time = 50;   // この秒数(千分の一秒)、WAITING状態ならクリックレイヤーが有効になる。  For this number of seconds (milliseconds), if in WAITING state, the click layer is activated.
 uint16_t to_reset_time = 800; // この秒数(千分の一秒)、CLICKABLE状態ならクリックレイヤーが無効になる。 For this number of seconds (milliseconds), the click layer is disabled if in CLICKABLE state.
@@ -46,11 +47,10 @@ int16_t after_click_lock_movement = 0; // クリック入力後の移動量を�
 int16_t mouse_record_threshold = 30; // ポインターの動きを一時的に記録するフレーム数。 Number of frames in which the pointer movement is temporarily recorded.
 int16_t mouse_move_count_ratio = 5;  // ポインターの動きを再生する際の移動フレームの係数。 The coefficient of the moving frame when replaying the pointer movement.
 
-int16_t mouse_movement;
-
 void eeconfig_init_user(void) {
     user_config.raw                   = 0;
-    user_config.to_clickable_movement = 50; // user_config.to_clickable_time = 10;
+    // user_config.to_clickable_movement = 50;
+    user_config.to_clickable_time = 100;
     eeconfig_update_user(user_config.raw);
 }
 
@@ -62,6 +62,7 @@ void keyboard_post_init_user(void) {
 void enable_click_layer(void) {
     layer_on(click_layer);
     click_timer = timer_read();
+    tp_enable_click_timer = 0;
     state       = CLICKABLE;
 }
 
@@ -71,7 +72,6 @@ void disable_click_layer(void) {
     layer_off(click_layer);
     scroll_mouse_interval_counter = 0;
     scroll_mouse_interval_counter = 0;
-    mouse_movement = 0;
 }
 
 // 自前の絶対数を返す関数。 Functions that return absolute numbers.
@@ -161,17 +161,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
         case KC_TO_CLICKABLE_INC:
             if (record->event.pressed) {
-                user_config.to_clickable_movement += 5; // user_config.to_clickable_time += 10;
+                // user_config.to_clickable_movement += 5;
+                user_config.to_clickable_time += 10;
                 eeconfig_update_user(user_config.raw);
             }
             return false;
 
         case KC_TO_CLICKABLE_DEC:
             if (record->event.pressed) {
-                user_config.to_clickable_movement -= 5; // user_config.to_clickable_time -= 10;
+                // user_config.to_clickable_movement -= 5;
+                user_config.to_clickable_time -= 10;
 
-                if (user_config.to_clickable_movement < 5) {
-                    user_config.to_clickable_movement = 5;
+                if (user_config.to_clickable_time < 10) {
+                    user_config.to_clickable_time = 10;
                 }
 
                 eeconfig_update_user(user_config.raw);
@@ -292,24 +294,15 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
             } break;
 
             case WAITING:
-                /*
-                if (timer_elapsed(click_timer) > user_config.to_clickable_time) {
-                    enable_click_layer();
-                }
-                */
-
-                mouse_movement = my_abs(current_x) > my_abs(current_y) ? my_abs(current_x) : my_abs(current_y);
-
-                if (mouse_movement >= user_config.to_clickable_movement) {
-                    mouse_movement = 0;
+                if (timer_elapsed(tp_enable_click_timer) > user_config.to_clickable_time) {
                     enable_click_layer();
                 }
                 break;
 
             default:
                 click_timer    = timer_read();
+                tp_enable_click_timer = timer_read();
                 state          = WAITING;
-                mouse_movement = 0;
         }
     } else {
         switch (state) {
@@ -327,14 +320,12 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
                 break;
 
             case WAITING:
-                if (timer_elapsed(click_timer) > 50) {
-                    mouse_movement = 0;
+                if (timer_elapsed(tp_enable_click_timer) > to_reset_time) {
                     state          = NONE;
                 }
                 break;
 
             default:
-                mouse_movement = 0;
                 state          = NONE;
         }
     }
