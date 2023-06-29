@@ -219,6 +219,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             } else {
                 return true;
             }
+        
+        case KC_ESC:
+            // click layer on時にESC押した際はESC入力せずlayer offだけする
+            disable_click_layer();
+            return false;
 
         default:
             if (record->event.pressed) {
