@@ -43,10 +43,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   // 記号・操作
   [2] = LAYOUT(
-    KC_ESC   , _______   , _______      , _______    , C(G(KC_T)) ,                           KC_LPRN , KC_LCBR , KC_LBRC  , KC_LT   , KC_DEL  ,
-    KC_TAB   , C(KC_TAB) , C(S(KC_TAB)) , SGUI(KC_A) , C(KC_Z)    ,                           KC_LPRN , KC_LCBR , KC_LBRC  , KC_LT   , KC_BSLS  ,
-    KC_CAPS  , _______   , _______      , G(KC_LBRC) , G(KC_RBRC) ,                           KC_RPRN , KC_RCBR , KC_RBRC  , KC_GT   , KC_PIPE  ,
-    _______  , _______   , _______      , _______    , _______    , _______  ,      KC_INT4 , KC_INT5 ,                                _______
+    KC_ESC   , G(KC_W)   , G(S(KC_T))   , _______    , C(G(KC_T)) ,                           KC_LPRN , KC_LCBR , KC_LBRC  , KC_LT   , KC_DEL  ,
+    KC_TAB   , KC_LCTRL  , KC_LSHIFT    , SGUI(KC_A) , C(KC_Z)    ,                           KC_LPRN , KC_LCBR , KC_LBRC  , KC_LT   , KC_EQUAL  ,
+    KC_CAPS  , _______   , _______      , G(KC_LBRC) , G(KC_RBRC) ,                           KC_RPRN , KC_RCBR , KC_RBRC  , KC_GT   , KC_MINUS  ,
+    _______  , _______   , _______      , _______    , _______    , _______  ,      _______ , _______ ,                                _______
   ),
 
   // 矢印
@@ -66,10 +66,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   // Mouse
   [5] = LAYOUT(
-    KC_ESC   , _______ , _______  , _______  , _______  ,                          _______    , _______    , _______    , _______      , _______  ,
-    KC_TAB   , _______ , _______  , _______  , _______  ,                          LSG(KC_T)  , KC_MS_BTN1 , KC_MS_BTN2 , KC_MY_SCRL_V , _______  ,
-    _______  , _______ , _______  , _______  , _______  ,                          LGUI(KC_W) , KC_MS_BTN4 , KC_MS_BTN5 , KC_MY_SCRL_H , _______  ,
-    KC_LCTL  , KC_LALT , KC_LGUI  , KC_LSFT  , _______  , _______  ,      _______ , _______   ,                                          KC_ESC
+    KC_ESC   , _______ , _______  , _______  , _______  ,                          _______ , _______    , _______    , _______      , _______  ,
+    KC_TAB   , _______ , _______  , _______  , _______  ,                          _______ , KC_MS_BTN1 , KC_MS_BTN2 , KC_MY_SCRL_V , _______  ,
+    _______  , _______ , _______  , _______  , _______  ,                          _______ , KC_MS_BTN4 , KC_MS_BTN5 , KC_MY_SCRL_H , _______  ,
+    KC_LCTL  , KC_LALT , KC_LGUI  , KC_LSFT  , _______  , _______  ,     _______ , _______   ,                                        KC_ESC
   ),
 
   // Config
@@ -83,7 +83,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [7] = LAYOUT(
     KC_F1   , KC_F2 , KC_F3  , KC_F4  , KC_F5  ,                            _______  , _______  , _______  , _______  , _______  ,
     KC_F6   , KC_F7 , KC_F8  , KC_F9  , KC_F10  ,                            _______  , _______  , _______  , _______  , _______  ,
-    _______   , _______ , _______  , _______  , _______  ,                            _______  , _______  , _______  , _______  , _______  ,
+    _______   , _______ , _______  , _______  , A(KC_F7)  ,                            _______  , _______  , _______  , _______  , _______  ,
     _______   , _______ , _______  , _______  , _______  , _______  ,      _______  , _______  ,                                  _______
   ),
 
@@ -127,8 +127,6 @@ void oledkit_render_info_user(void) {
 
     oled_write_P(PSTR("Layer:"), false);
     oled_write(get_u8_str(get_highest_layer(layer_state), ' '), false);
-    oled_write_P(PSTR(" MV:"), false);
-    oled_write(get_u8_str(mouse_movement, ' '), false);
     oled_write_P(PSTR("/"), false);
     oled_write(get_u8_str(user_config.to_clickable_movement, ' '), false);
 }
