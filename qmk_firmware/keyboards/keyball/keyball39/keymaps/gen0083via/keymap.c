@@ -44,7 +44,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // 記号・操作
   [2] = LAYOUT(
     KC_ESC   , G(KC_W)   , G(S(KC_T))   , _______    , C(G(KC_T)) ,                           KC_LPRN , KC_LCBR , KC_LBRC  , KC_LT   , KC_DEL  ,
-    KC_TAB   , KC_LCTRL  , KC_LSHIFT    , SGUI(KC_A) , C(KC_Z)    ,                           KC_LPRN , KC_LCBR , KC_LBRC  , KC_LT   , KC_EQUAL  ,
+    KC_TAB   , KC_LCTL   , KC_LSFT    , SGUI(KC_A) , C(KC_Z)    ,                           KC_LPRN , KC_LCBR , KC_LBRC  , KC_LT   , KC_EQUAL  ,
     KC_CAPS  , _______   , _______      , G(KC_LBRC) , G(KC_RBRC) ,                           KC_RPRN , KC_RCBR , KC_RBRC  , KC_GT   , KC_MINUS  ,
     _______  , _______   , _______      , _______    , _______    , _______  ,      _______ , _______ ,                                _______
   ),

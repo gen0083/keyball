@@ -10,7 +10,6 @@ qmk_firmwareをホームディレクトリ、Keyballを~/program/keyboardに配�
 1. [qmk_firmware](https://github.com/qmk/qmk_firmware)をcloneする
 2. [gen0083/keyball](https://github.com/gen0083/keyball)のclone
 3. symbolic linkを貼る（`ln -s ~/program/keyboard/keyball_gen0083/qmk_firmware/keyboards/keyball ~/qmk_firmware/keyboards/keyball`）[^1]
-4. qmk_firmwareのバージョンを合わせる（`git checkout 0.19.x`）
 5. qmk_firmwareでビルド（`qmk compile -kb <keyboard> -km <keymap>`）[^2]
 6. `qmk flash`で書き込み
 
