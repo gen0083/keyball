@@ -196,6 +196,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
         // スクロールの挙動を理想的にする(スクロール時は先にボタンを押してからトラックボールを動かすことがあるのでその調整）
         case LT(5,KC_L):
+            if (!layer_state_is(0)) {
+                // デフォルトレイヤー以外ではマウスレイヤー切り替えの処理は考慮しないようにする
+                return true;
+            }
             if (!record->tap.count && record->event.pressed) {
                 enable_click_layer();
                 state = SCROLLING_V;
@@ -207,6 +211,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 return true;
             }
         case LT(5,KC_DOT):
+            if (!layer_state_is(0)) {
+                // デフォルトレイヤー以外ではマウスレイヤー切り替えの処理は考慮しないようにする
+                return true;
+            }
             if (!record->tap.count && record->event.pressed) {
                 enable_click_layer();
                 state = SCROLLING_H;
