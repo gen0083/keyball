@@ -32,6 +32,11 @@ user_config_t user_config;
 
 enum click_state state;       // 現在のクリック入力受付の状態 Current click input reception status
 uint16_t         click_timer; // タイマー。状態に応じて時間で判定する。 Timer. Time to determine the state of the system.
+uint16_t disable_timer;
+uint16_t my_timer;
+uint16_t enable_timer;
+bool disable_timer_reading = false;
+bool enable_timer_reading = false;
 
 // uint16_t to_clickable_time = 50;   // この秒数(千分の一秒)、WAITING状態ならクリックレイヤーが有効になる。  For this number of seconds (milliseconds), if in WAITING state, the click layer is activated.
 uint16_t to_reset_time = 600; // この秒数(千分の一秒)、CLICKABLE状態ならクリックレイヤーが無効になる。 For this number of seconds (milliseconds), the click layer is disabled if in CLICKABLE state.
@@ -98,7 +103,6 @@ bool is_clickable_mode(void) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    uint16_t my_timer;
 
     switch (keycode) {
         // defaultのマウスボタンを扱えるようにする
@@ -133,29 +137,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         // scroll button
         // 独自コードはtap-holdが設定できないので独自にハンドリング
         case KC_MY_SCRL_V:
+        case KC_MY_SCRL_H:
             if (record->event.pressed) {
-                my_timer = timer_read();
-                state = SCROLLING_V;
+                if (!disable_timer_reading) {
+                    disable_timer = timer_read();
+                    disable_timer_reading = true;
+                }
+                state = keycode == KC_MY_SCRL_V ? SCROLLING_V : SCROLLING_H;
             } else {
-                if (timer_elapsed(my_timer) < TAPPING_TERM) {
+                if (timer_elapsed(disable_timer) < TAPPING_TERM) {
                      disable_click_layer();
-                     tap_code(KC_L);
+                     tap_code(keycode == KC_MY_SCRL_V ? KC_L : KC_DOT);
                 } else {
                      enable_click_layer();
                 }
-            }
-            return false;
-        case KC_MY_SCRL_H:
-            if (record->event.pressed) {
-                my_timer = timer_read();
-                state = SCROLLING_H;
-            } else {
-                if (timer_elapsed(my_timer) < TAPPING_TERM) {
-                     disable_click_layer();
-                     tap_code(KC_DOT);
-                } else {
-                    enable_click_layer();
-                }
+                disable_timer_reading = false;
             }
             return false;
 
@@ -195,35 +191,44 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
              return true;
 
         // スクロールの挙動を理想的にする(スクロール時は先にボタンを押してからトラックボールを動かすことがあるのでその調整）
+        // デフォルトレイヤーにいるときのみ処理をする
         case LT(5,KC_L):
-            if (!layer_state_is(0)) {
-                // デフォルトレイヤー以外ではマウスレイヤー切り替えの処理は考慮しないようにする
-                return true;
-            }
-            if (!record->tap.count && record->event.pressed) {
-                enable_click_layer();
-                state = SCROLLING_V;
-                return false;
-            } else if (!record->tap.count) {
-                enable_click_layer();
-                return false;
-            } else {
-                return true;
-            }
         case LT(5,KC_DOT):
-            if (!layer_state_is(0)) {
-                // デフォルトレイヤー以外ではマウスレイヤー切り替えの処理は考慮しないようにする
+            if (record->event.pressed) {
+                // 押されたとき
+                if (!enable_timer_reading) {
+                    // 初回のみtimer_read
+                    enable_timer = timer_read();
+                    enable_timer_reading = true;
+                }
+                if (timer_elapsed(enable_timer) > TAPPING_TERM) {
+                    enable_click_layer();
+                    state = keycode == LT(5,KC_L) ? SCROLLING_V : SCROLLING_H;
+                    if (!disable_timer_reading) {
+                        disable_timer = timer_read();
+                        disable_timer_reading = true;
+                    }
+                    return false;
+                }
                 return true;
-            }
-            if (!record->tap.count && record->event.pressed) {
-                enable_click_layer();
-                state = SCROLLING_H;
-                return false;
-            } else if (!record->tap.count) {
-                enable_click_layer();
-                return false;
             } else {
-                return true;
+                // 離したとき
+                enable_timer_reading = false; // 押したときにスクロールを有効にするか判定するタイマーのフラグはこの時点でfalseに
+                if (layer_state_is(click_layer)) {
+                    if (timer_elapsed(disable_timer) < TAPPING_TERM) {
+                        // スクロールが有効になった時間が短い＝単なるタップだった
+                        disable_click_layer();
+                        tap_code(keycode == LT(5,KC_L) ? KC_L : KC_DOT);
+                    } else {
+                        // スクロールが有効だったあと、スクロールをやめたときにそのままマウスレイヤーを有効にする
+                        enable_click_layer();
+                    }
+                    disable_timer_reading = false;
+                    return false;
+                } else {
+                    // クリックレイヤーでないならそのまま普通のキーコードとして処理
+                    return true;
+                }
             }
         
         case KC_ESC:
