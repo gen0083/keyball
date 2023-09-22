@@ -8,7 +8,8 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 
         // liとタイピングするときにずらすように同時押しした場合に反応しないためその対策
         case LT(5,KC_L):
-            return TAPPING_TERM + 200;
+        case LT(5,KC_DOT):
+            return TAPPING_TERM + 400;
 
         default:
             return TAPPING_TERM;
