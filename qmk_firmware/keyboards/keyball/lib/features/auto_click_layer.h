@@ -32,11 +32,7 @@ user_config_t user_config;
 
 enum click_state state;       // 現在のクリック入力受付の状態 Current click input reception status
 uint16_t         click_timer; // タイマー。状態に応じて時間で判定する。 Timer. Time to determine the state of the system.
-uint16_t disable_timer;
 uint16_t my_timer;
-uint16_t enable_timer;
-bool disable_timer_reading = false;
-bool enable_timer_reading = false;
 
 // uint16_t to_clickable_time = 50;   // この秒数(千分の一秒)、WAITING状態ならクリックレイヤーが有効になる。  For this number of seconds (milliseconds), if in WAITING state, the click layer is activated.
 uint16_t to_reset_time = 600; // この秒数(千分の一秒)、CLICKABLE状態ならクリックレイヤーが無効になる。 For this number of seconds (milliseconds), the click layer is disabled if in CLICKABLE state.
@@ -139,19 +135,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case KC_MY_SCRL_V:
         case KC_MY_SCRL_H:
             if (record->event.pressed) {
-                if (!disable_timer_reading) {
-                    disable_timer = timer_read();
-                    disable_timer_reading = true;
-                }
+                my_timer = timer_read();
                 state = keycode == KC_MY_SCRL_V ? SCROLLING_V : SCROLLING_H;
             } else {
-                if (timer_elapsed(disable_timer) < TAPPING_TERM) {
-                     disable_click_layer();
-                     tap_code(keycode == KC_MY_SCRL_V ? KC_L : KC_DOT);
+                if (timer_elapsed(my_timer) < TAPPING_TERM) {
+                    // スクロールを押した時間が短い場合はスクロールではなくL/Dotを入力したいときと判定する
+                    disable_click_layer();
+                    tap_code(keycode == KC_MY_SCRL_V ? KC_L : KC_DOT);
                 } else {
-                     enable_click_layer();
+                    enable_click_layer();
                 }
-                disable_timer_reading = false;
             }
             return false;
 
@@ -192,43 +185,24 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
         // スクロールの挙動を理想的にする(スクロール時は先にボタンを押してからトラックボールを動かすことがあるのでその調整）
         // デフォルトレイヤーにいるときのみ処理をする
-        case LT(5,KC_L):
-        case LT(5,KC_DOT):
+        case KC_L:
+        case KC_DOT:
             if (record->event.pressed) {
-                // 押されたとき
-                if (!enable_timer_reading) {
-                    // 初回のみtimer_read
-                    enable_timer = timer_read();
-                    enable_timer_reading = true;
-                }
-                if (timer_elapsed(enable_timer) > TAPPING_TERM) {
-                    enable_click_layer();
-                    state = keycode == LT(5,KC_L) ? SCROLLING_V : SCROLLING_H;
-                    if (!disable_timer_reading) {
-                        disable_timer = timer_read();
-                        disable_timer_reading = true;
-                    }
-                    return false;
-                }
-                return true;
+                // 押されたときに長押しの処理をやってしまう
+                my_timer = timer_read();
+                enable_click_layer();
+                state = keycode == KC_L ? SCROLLING_V : SCROLLING_H;
+                return false;
             } else {
-                // 離したとき
-                enable_timer_reading = false; // 押したときにスクロールを有効にするか判定するタイマーのフラグはこの時点でfalseに
-                if (layer_state_is(click_layer)) {
-                    if (timer_elapsed(disable_timer) < TAPPING_TERM) {
-                        // スクロールが有効になった時間が短い＝単なるタップだった
-                        disable_click_layer();
-                        tap_code(keycode == LT(5,KC_L) ? KC_L : KC_DOT);
-                    } else {
-                        // スクロールが有効だったあと、スクロールをやめたときにそのままマウスレイヤーを有効にする
-                        enable_click_layer();
-                    }
-                    disable_timer_reading = false;
-                    return false;
+                // 離したときに判定する（押されている間中ずっと上記のブランチにバカ正直にやってくるわけではない）
+                if (timer_elapsed(my_timer) < TAPPING_TERM + 200) {
+                    disable_click_layer();
+                    tap_code(keycode == KC_L ? KC_L : KC_DOT);
                 } else {
-                    // クリックレイヤーでないならそのまま普通のキーコードとして処理
-                    return true;
+                    // スクロールが有効だったあと、スクロールをやめたときにそのままマウスレイヤーを有効にする
+                    enable_click_layer();
                 }
+                return false;
             }
         
         case KC_ESC:
