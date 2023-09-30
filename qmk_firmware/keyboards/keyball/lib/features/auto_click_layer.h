@@ -150,20 +150,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return false;
 
         case KC_TO_CLICKABLE_INC:
-            if (record->event.pressed) {
-                user_config.to_clickable_movement += 5; // user_config.to_clickable_time += 10;
-                eeconfig_update_user(user_config.raw);
-            }
-            return false;
-
         case KC_TO_CLICKABLE_DEC:
             if (record->event.pressed) {
-                user_config.to_clickable_movement -= 5; // user_config.to_clickable_time -= 10;
-
+                user_config.to_clickable_movement += keycode == KC_TO_CLICKABLE_INC ? 5 : -5;
                 if (user_config.to_clickable_movement < 5) {
                     user_config.to_clickable_movement = 5;
                 }
-
                 eeconfig_update_user(user_config.raw);
             }
             return false;
