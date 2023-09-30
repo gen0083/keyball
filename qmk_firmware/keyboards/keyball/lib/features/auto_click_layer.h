@@ -285,7 +285,10 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
             } break;
 
             case WAITING:
-                enable_click_layer();
+                mouse_movement += my_abs(current_x) + my_abs(current_y);
+                if (mouse_movement > user_config.to_clickable_movement) {
+                    enable_click_layer();
+                }
                 break;
 
             default:
@@ -309,7 +312,7 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
                 break;
 
             case WAITING:
-                if (timer_elapsed(click_timer) > 50) {
+                if (timer_elapsed(click_timer) > to_reset_time) {
                     mouse_movement = 0;
                     state          = NONE;
                 }
