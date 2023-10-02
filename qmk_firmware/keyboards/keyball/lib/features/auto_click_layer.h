@@ -1,3 +1,6 @@
+#ifdef CONSOLE_ENABLE
+#include "print.h"
+#endif
 // https://github.com/takashicompany/qmk_firmware/blob/keyball/keyboards/keyball/keyball44/keymaps/takashicompany/keymap.c
 
 enum custom_keycodes {
@@ -225,6 +228,9 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
     int16_t current_y = mouse_report.y;
     int16_t current_h = 0;
     int16_t current_v = 0;
+#ifdef CONSOLE_ENABLE
+    uprintf("x:%d y:%d mouse_movement:%d\n", mouse_report.x, mouse_report.y, mouse_movement);
+#endif
 
     if (current_x != 0 || current_y != 0) {
         switch (state) {
