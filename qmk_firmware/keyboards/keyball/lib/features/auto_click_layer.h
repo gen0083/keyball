@@ -1,3 +1,6 @@
+#ifdef CONSOLE_ENABLE
+#include "print.h"
+#endif
 // https://github.com/takashicompany/qmk_firmware/blob/keyball/keyboards/keyball/keyball44/keymaps/takashicompany/keymap.c
 
 enum custom_keycodes {
@@ -33,6 +36,7 @@ user_config_t user_config;
 enum click_state state;       // 現在のクリック入力受付の状態 Current click input reception status
 uint16_t         click_timer; // タイマー。状態に応じて時間で判定する。 Timer. Time to determine the state of the system.
 uint16_t my_timer;
+uint16_t prev_keycode;
 
 // uint16_t to_clickable_time = 50;   // この秒数(千分の一秒)、WAITING状態ならクリックレイヤーが有効になる。  For this number of seconds (milliseconds), if in WAITING state, the click layer is activated.
 uint16_t to_reset_time = 600; // この秒数(千分の一秒)、CLICKABLE状態ならクリックレイヤーが無効になる。 For this number of seconds (milliseconds), the click layer is disabled if in CLICKABLE state.
@@ -149,20 +153,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return false;
 
         case KC_TO_CLICKABLE_INC:
-            if (record->event.pressed) {
-                user_config.to_clickable_movement += 5; // user_config.to_clickable_time += 10;
-                eeconfig_update_user(user_config.raw);
-            }
-            return false;
-
         case KC_TO_CLICKABLE_DEC:
             if (record->event.pressed) {
-                user_config.to_clickable_movement -= 5; // user_config.to_clickable_time -= 10;
-
+                user_config.to_clickable_movement += keycode == KC_TO_CLICKABLE_INC ? 5 : -5;
                 if (user_config.to_clickable_movement < 5) {
                     user_config.to_clickable_movement = 5;
                 }
-
                 eeconfig_update_user(user_config.raw);
             }
             return false;
@@ -192,15 +188,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 my_timer = timer_read();
                 enable_click_layer();
                 state = keycode == KC_L ? SCROLLING_V : SCROLLING_H;
+                prev_keycode = keycode;
                 return false;
             } else {
                 // 離したときに判定する（押されている間中ずっと上記のブランチにバカ正直にやってくるわけではない）
-                if (timer_elapsed(my_timer) < TAPPING_TERM + 200) {
-                    disable_click_layer();
-                    tap_code(keycode == KC_L ? KC_L : KC_DOT);
-                } else {
-                    // スクロールが有効だったあと、スクロールをやめたときにそのままマウスレイヤーを有効にする
-                    enable_click_layer();
+                if (prev_keycode != 0) {
+                    if (timer_elapsed(my_timer) < TAPPING_TERM + 200) {
+                        disable_click_layer();
+                        tap_code(keycode == KC_L ? KC_L : KC_DOT);
+                    } else {
+                        // スクロールが有効だったあと、スクロールをやめたときにそのままマウスレイヤーを有効にする
+                        enable_click_layer();
+                    }
+                    prev_keycode = 0;
                 }
                 return false;
             }
@@ -211,6 +211,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return false;
 
         default:
+            if (prev_keycode != 0) {
+                tap_code(prev_keycode);
+                prev_keycode = 0;
+            }
             if (record->event.pressed) {
                 disable_click_layer();
             }
@@ -224,6 +228,9 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
     int16_t current_y = mouse_report.y;
     int16_t current_h = 0;
     int16_t current_v = 0;
+#ifdef CONSOLE_ENABLE
+    uprintf("x:%d y:%d mouse_movement:%d\n", mouse_report.x, mouse_report.y, mouse_movement);
+#endif
 
     if (current_x != 0 || current_y != 0) {
         switch (state) {
@@ -284,7 +291,10 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
             } break;
 
             case WAITING:
-                enable_click_layer();
+                mouse_movement += my_abs(current_x) + my_abs(current_y);
+                if (mouse_movement > user_config.to_clickable_movement) {
+                    enable_click_layer();
+                }
                 break;
 
             default:
@@ -308,7 +318,7 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
                 break;
 
             case WAITING:
-                if (timer_elapsed(click_timer) > 50) {
+                if (timer_elapsed(click_timer) > to_reset_time) {
                     mouse_movement = 0;
                     state          = NONE;
                 }
